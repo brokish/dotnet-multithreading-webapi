@@ -16,9 +16,9 @@ public class TaskController : ControllerBase
     }
     
     [HttpPost("run-parallel")]
-    public IActionResult RunParallelTasks()
+    public IActionResult RunParallelTasks([FromBody] CreateOrderDto dto)
     {
-        var task1 = Task.Run(() => ProcessOrdersTask());
+        var task1 = Task.Run(() => ProcessOrdersTask(dto));
         var task2 = Task.Run(() => GenerateReportTask());
         var task3 = Task.Run(() => SendNotificationsTask());
 
@@ -33,7 +33,7 @@ public class TaskController : ControllerBase
         });
     }
     
-    private void ProcessOrdersTask()
+    private void ProcessOrdersTask(CreateOrderDto dto)
     {
         using (var scope = _scopeFactory.CreateScope())
         {
@@ -43,8 +43,8 @@ public class TaskController : ControllerBase
 
             context.Orders.Add(new Order
             {
-                CustomerName = "Shota Brokishvili",
-                Amount = 150,
+                CustomerName = dto.CustomerName,
+                Amount = dto.Amount,
                 OrderDate = DateTime.Now
             });
 
