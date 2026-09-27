@@ -18,6 +18,11 @@ public class TaskController : ControllerBase
     [HttpPost("run-parallel")]
     public IActionResult RunParallelTasks([FromBody] CreateOrderDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var task1 = Task.Run(() => ProcessOrdersTask(dto));
         var task2 = Task.Run(() => GenerateReportTask());
         var task3 = Task.Run(() => SendNotificationsTask());
@@ -39,7 +44,7 @@ public class TaskController : ControllerBase
         {
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            Thread.Sleep(3000); 
+            Thread.Sleep(1000); 
 
             context.Orders.Add(new Order
             {
@@ -58,7 +63,7 @@ public class TaskController : ControllerBase
         {
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            Thread.Sleep(2000); 
+            Thread.Sleep(3000); 
 
             int count = context.Orders.Count();
             return count;
@@ -67,6 +72,6 @@ public class TaskController : ControllerBase
 
     private void SendNotificationsTask()
     {
-        Thread.Sleep(1000); 
+        Thread.Sleep(2000); 
     }
 }
